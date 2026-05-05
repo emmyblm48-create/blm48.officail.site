@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="th">
+  <!-- Header ที่มีปุ่ม Hamburger -->
+    <header class="main-header">
+        <button class="menu-trigger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+        </button>
+    </header>
+
+    <!-- พื้นที่ Backdrop สำหรับกดปิดข้างนอก -->
+    <div class="menu-backdrop" id="menuBackdrop" onclick="toggleMenu()"></div>
+
+    <!-- แถบเมนูสีชมพู -->
+    <div class="side-menu" id="sideMenu">
+        <button class="close-menu-btn" onclick="toggleMenu()">✕</button>
+        <ul class="side-nav-links">
+            <li><a href="home.html">HOME</a></li>
+            <li><a href="https://sites.google.com/view/blm48/news">NEWS</a></li>
+            <li><a href="https://sites.google.com/view/blm48/schedule">SCHEDULE</a></li>
+            <li><a href="#">PROFILE</a></li>
+            <li><a href="#">DISCOGRAPHY</a></li>
+            <li><a href="#">ABOUT</a></li>
+          <li><a href="#">THEATER</a></li>
+          <li><a href="#">CONCERT</a></li>
+          <li><a href="https://blm48-membership.vercel.app/">MEMBERSHIP</a></li>
+        </ul>
+    </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLM48 Official Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+    
+    /* --- Global Styles --- */
+    * { box-sizing: border-box; }
+    body {
+        margin: 0; padding: 0;
+        font-family: 'Quicksand', 'Kanit', sans-serif;
+        background-color: #ffffff;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- Landing Overlay --- */
+    #landing-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: #fff9e6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; 
+        transition: opacity 1.5s ease-out, visibility 1.5s;
+    }
+    
+    /* ปรับขนาด Logo หน้า Landing ให้เล็กลงเมื่อเปิดในมือถือ */
+    .logo-text { font-size: clamp(32px, 10vw, 52px); color: #ff85a2; letter-spacing: 5px; font-weight: 300; }
+    .sub-text { font-size: clamp(14px, 4vw, 18px); color: #ffb6c1; letter-spacing: 2px; }
+
+    /* --- Hero Banner --- */
+    .hero-banner {
+        position: relative;
+        width: 100%; 
+        height: 60vh; /* ใช้ vh เพื่อให้ความสูงสัมพันธ์กับหน้าจออุปกรณ์ */
+        min-height: 300px;
+        max-height: 500px;
+        overflow: hidden;
+        background-color: #000;
+    }
+    .hero-banner img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* --- Slider CSS (ปรับให้ Responsive) --- */
+    .slider-container { 
+        width: 90%; /* มือถือใช้พื้นที่เกือบเต็ม */
+        max-width: 800px; /* คอมพิวเตอร์จำกัดความกว้าง */
+        margin: auto; 
+        position: relative; 
+    }
+
+    .slider-outer { width: 100%; overflow: hidden; padding: 20px 0; }
+    .slide {
+        min-width: 100%; 
+        padding: 0 5px;
+        transition: 0.5s; 
+        opacity: 0.4; 
+        transform: scale(0.9);
+    }
+    .slide.active { opacity: 1; transform: scale(1); }
+    .slide img { width: 100%; border-radius: 12px; box-shadow: 0 5px 15px rgba(255,182,193,0.3); }
+
+    /* ปรับปุ่ม Prev/Next ให้กดง่ายขึ้นในมือถือ */
+    .prev, .next {
+        width: 40px; height: 40px;
+        background-color: rgba(255,255,255,0.9);
+        border: 1px solid #ffd1dc;
+        border-radius: 50%;
+        cursor: pointer;
+        position: absolute; top: 50%; transform: translateY(-50%);
+        z-index: 10;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .prev { left: -10px; } 
+    .next { right: -10px; }
+
+    /* --- Content Sections --- */
+    .content-section {
+        max-width: 900px;
+        margin: 60px auto; /* ลดระยะห่างลงเล็กน้อยให้เหมาะกับ Mobile */
+        padding: 0 20px;
+    }
+
+    .section-header h2 { font-size: clamp(22px, 6vw, 32px); letter-spacing: 2px; }
+
+    /* --- News Section --- */
+    .news-card { display: flex; gap: 15px; margin-bottom: 20px; }
+    .news-thumb { width: 100px; height: 100px; flex-shrink: 0; }
+    .news-title { font-size: 15px; }
+
+    /* --- Schedule Section --- */
+    .date-box { min-width: 80px; } /* ปรับขนาดกล่องวันที่ */
+    .date-main { font-size: 28px; }
+
+    /* --- Video Grid --- */
+    .video-grid { 
+        display: grid; 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 20px; 
+    }
+
+    /* --- FOOTER --- */
+    .social-icons { flex-wrap: wrap; justify-content: center; }
+    .icon-btn { width: 45px; height: 45px; font-size: 18px; }
+
+    /* --- Media Queries สำหรับหน้าจอขนาดเล็ก (Mobile) --- */
+    @media (max-width: 768px) {
+        .content-section { margin: 40px auto; }
+        
+        /* ปรับ Schedule ให้ดูง่ายขึ้น */
+        .schedule-item { flex-direction: row; align-items: center; }
+        
+        /* ปรับปุ่มนำทางสไลเดอร์ให้อยู่ในจอ */
+        .prev { left: 5px; }
+        .next { right: 5px; }
+
+        /* ซ่อนกลีบดอกไม้บางส่วนถ้าเครื่องสเปคต่ำ (Optional) */
+        .bp6, .bp7, .bp8 { display: none; }
+    }
+
+    @media (max-width: 480px) {
+        /* วิดีโอเรียงเป็นแถวเดียวในมือถือจอเล็ก */
+        .video-grid { grid-template-columns: 1fr; }
+        
+        .news-card { flex-direction: row; } /* ยังคงเรียงแนวนอนแต่ขนาดเล็กลง */
+        .news-thumb { width: 80px; height: 80px; }
+        
+        .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+    
+    /* หน้า Landing ที่จะทับทั้งหน้าจอ */
+    #landing-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: #fff9e6; /* สีเหลืองอ่อน */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999; 
+      transition: opacity 1.5s ease-out, visibility 1.5s; /* จางหายแบบนุ่มนวล */
+      overflow: hidden;
+    }
+
+    .container { text-align: center; }
+    .logo-text { font-size: 52px; color: #ff85a2; letter-spacing: 10px; font-weight: 300; margin-bottom: 10px; }
+    .sub-text { font-size: 18px; color: #ffb6c1; letter-spacing: 4px; }
+
+    /* กลีบดอกไม้โปรย */
+    .petal {
+      position: absolute; background-color: #ffb6c1;
+      border-radius: 150% 0 150% 150%;
+      pointer-events: none;
+      animation: falling linear infinite;
+    }
+    @keyframes falling {
+      0% { top: -10%; opacity: 0; transform: rotate(0deg); }
+      10% { opacity: 0.8; }
+      100% { top: 110%; opacity: 0; transform: rotate(720deg) translateX(100px); }
+    }
+
+    /* คลาสสั่งจางหาย */
+    .fade-out {
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    /* --- Global Styles --- */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Quicksand', 'Kanit', sans-serif;
+      background-color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* --- ระบบกลีบดอกไม้โปรยด้านหลัง (เพิ่มให้เยอะขึ้น) --- */
+    .bg-blossom-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: -1; /* อยู่หลังสุด */
+    }
+
+    .bg-petal {
+      position: absolute;
+      background-color: #ffb6c1;
+      border-radius: 50% 0 50% 50%;
+      opacity: 0;
+      animation: fallDown infinite linear;
+    }
+
+    @keyframes fallDown {
+      0% { top: -10%; opacity: 0; transform: translateX(0) rotate(0deg); }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { top: 110%; opacity: 0; transform: translateX(150px) rotate(720deg); }
+    }
+
+    /* กระจายกลีบดอกไม้หลายๆ จุด */
+    .bp1 { width: 15px; height: 15px; left: 5%; animation-duration: 10s; animation-delay: 0s; }
+    .bp2 { width: 10px; height: 10px; left: 25%; animation-duration: 14s; animation-delay: 2s; }
+    .bp3 { width: 20px; height: 20px; left: 45%; animation-duration: 12s; animation-delay: 5s; }
+    .bp4 { width: 12px; height: 12px; left: 65%; animation-duration: 16s; animation-delay: 1s; }
+    .bp5 { width: 18px; height: 18px; left: 85%; animation-duration: 13s; animation-delay: 4s; }
+    .bp6 { width: 14px; height: 14px; left: 15%; animation-duration: 11s; animation-delay: 7s; }
+    .bp7 { width: 11px; height: 11px; left: 55%; animation-duration: 15s; animation-delay: 3s; }
+    .bp8 { width: 16px; height: 16px; left: 95%; animation-duration: 12s; animation-delay: 6s; }
+
+    /* --- 1. HERO BANNER CSS --- */
+    .hero-banner {
+      position: relative;
+      width: 100%; height: 450px;
+      overflow: hidden;
+      display: flex; justify-content: center; align-items: center;
+      background-color: #000;
+    }
+    .hero-banner img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      animation: zoomEffect 20s infinite alternate;
+    }
+    @keyframes zoomEffect { from { transform: scale(1); } to { transform: scale(1.1); } }
+    
+    .blossom-container {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 10;
+    }
+    .petal {
+      position: absolute; background-color: #ffb6c1;
+      border-radius: 50% 0 50% 50%; opacity: 0;
+      animation: falling infinite linear;
+    }
+    @keyframes falling {
+      0% { top: -10%; opacity: 0; transform: translateX(0) rotate(0deg); }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { top: 110%; opacity: 0; transform: translateX(150px) rotate(720deg); }
+    }
+    .p1 { width: 15px; height: 15px; left: 10%; animation-duration: 8s; }
+    .p2 { width: 10px; height: 10px; left: 30%; animation-duration: 12s; animation-delay: 2s; }
+    .p3 { width: 18px; height: 18px; left: 50%; animation-duration: 10s; animation-delay: 4s; }
+    .p4 { width: 12px; height: 12px; left: 75%; animation-duration: 15s; animation-delay: 1s; }
+    .p5 { width: 14px; height: 14px; left: 90%; animation-duration: 11s; animation-delay: 3s; }
+
+    /* --- 2. SLIDER CSS --- */
+/* 1. ปรับความกว้างโดยรวมของ Slider ให้แคบลง (จากเดิม 70%) */
+    .slider-container { 
+      width: 60%; /* ลดความกว้างลงเพื่อให้ดูไม่ใหญ่เกินไป */
+      margin: auto; 
+      position: relative; 
+      overflow: visible; 
+    }
+
+    /* 2. ปรับระยะห่างบน-ล่าง ของโซน Slider */
+    .slider-outer { 
+      width: 100%; 
+      overflow: hidden; 
+      padding: 30px 0 20px; /* ลด padding จาก 50px/30px */
+    }
+
+    .slides { display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+
+    .slide {
+      min-width: 100%; 
+      box-sizing: border-box; 
+      padding: 0 10px; /* ลดช่องว่างระหว่างสไลด์ */
+      transition: all 0.5s; 
+      position: relative; 
+      opacity: 0.4; 
+      transform: scale(0.85); /* ย่อขนาดสไลด์ที่ไม่ใช้งานให้เล็กลงอีกนิด */
+    }
+
+    /* 3. ปรับขนาดสไลด์ที่แสดงอยู่ให้ดูพอดี ไม่ขยายใหญ่เกินไป */
+    .slide.active { 
+      opacity: 1; 
+      transform: scale(1.0); /* ปรับให้ขนาดปกติ (1.0) หรือใหญ่ขึ้นนิดเดียวพอ */
+      z-index: 2; 
+    }
+
+    /* 4. ปรับความโค้งและเงาของรูปภาพ */
+    .slide img { 
+      width: 100%; 
+      border-radius: 15px; /* ลดความโค้งมนลงให้ดูคมชัดขึ้น */
+      box-shadow: 0 5px 15px rgba(255, 182, 193, 0.3); 
+    }
+
+    /* 5. ปรับขนาดปุ่ม Prev/Next ให้เล็กลง */
+    .prev, .next {
+      position: absolute; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      z-index: 10;
+      background-color: white; 
+      color: #ff85a2; 
+      border: 1.5px solid #ffd1dc;
+      width: 35px; /* ลดขนาดปุ่มจาก 45px */
+      height: 35px; 
+      border-radius: 50%; 
+      cursor: pointer;
+      font-size: 16px; /* ลดขนาดลูกศร */
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+    }
+
+    /* ปรับตำแหน่งปุ่มให้ขยับเข้ามาใกล้รูปมากขึ้น */
+    .prev { left: -45px; } 
+    .next { right: -45px; }
+
+    /* 6. ปรับขนาดแถบข้อความ (Caption) */
+    .caption {
+      position: absolute; 
+      bottom: 15px; 
+      left: 25px;
+      background: rgba(255, 255, 255, 0.9); 
+      padding: 4px 12px;
+      border-radius: 20px; 
+      color: #d63384; 
+      font-size: 12px; /* ลดขนาดตัวอักษร */
+      font-weight: bold;
+    }
+
+    /* 7. ปรับขนาดจุดนำทาง (Dots) */
+    .dots { text-align: center; margin-top: 15px; }
+    .dot { 
+      height: 8px; /* ลดขนาดจุดลง */
+      width: 8px; 
+      margin: 0 4px; 
+      background-color: #ffd1dc; 
+      border-radius: 50%; 
+      display: inline-block; 
+      cursor: pointer; 
+    }
+    .dot.active { background-color: #ff85a2; width: 18px; border-radius: 8px; }
+    .dot.active { background-color: #ff85a2; width: 25px; border-radius: 10px; }
+
+     /* --- 3. COMMON SECTION STYLES (เว้นระยะระหว่างช่วง) --- */
+    .content-section {
+      max-width: 900px;
+      margin: 120px auto; /* เพิ่มระยะห่างระหว่างช่วงเป็น 120px */
+      padding: 0 20px;
+      position: relative;
+    }
+
+    .section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid #fddc5a; padding-bottom: 15px; margin-bottom: 40px;
+    }
+    .section-header h2 { font-size: 32px; letter-spacing: 5px; color: #333; margin: 0; font-weight: 300; }
+    .view-all-btn { text-decoration: none; color: #e2a0b3; font-size: 14px; font-weight: 600; transition: 0.3s; }
+    .view-all-btn:hover { transform: translateX(5px); color: #ff85a2; }
+
+    /* --- 3. NEWS SECTION CSS --- */
+    .news-section { max-width: 900px; margin: 60px auto; padding: 0 20px; }
+    .news-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid #fddc5a; padding-bottom: 10px; margin-bottom: 30px;
+    }
+    .news-header h2 { font-size: 28px; letter-spacing: 5px; color: #333; margin: 0; font-weight: 300; }
+    .view-all-btn { text-decoration: none; color: #e2a0b3; font-size: 14px; font-weight: 600; transition: 0.3s; }
+    .view-all-btn:hover { transform: translateX(5px); color: #ff85a2; }
+    .news-container { display: flex; flex-direction: column; gap: 25px; }
+    .news-card { display: flex; gap: 20px; text-decoration: none; color: inherit; transition: 0.3s; align-items: center; }
+    .news-card:hover { transform: scale(1.01); }
+    .news-thumb {
+      width: 120px; height: 120px; border-radius: 10px; overflow: hidden;
+      background-color: #fff; border: 1px solid #eee; display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+    }
+    .news-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .news-meta { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; }
+    .news-tag { font-size: 10px; padding: 2px 10px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+    .tag-media { color: #00bcd4; border: 1px solid #00bcd4; }
+    .tag-event { color: #f06292; border: 1px solid #f06292; }
+    .tag-release { color: #fbc02d; border: 1px solid #fbc02d; }
+    .news-date { font-size: 14px; color: #666; font-weight: 600; }
+    .news-new { color: #ff85a2; font-size: 10px; font-weight: 800; }
+    .news-title { font-size: 16px; color: #444; line-height: 1.5; }
+
+    /* --- 4. SCHEDULE SECTION CSS --- */
+    .schedule-section { max-width: 900px; margin: 60px auto; padding: 0 20px; }
+    .schedule-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid #fddc5a; padding-bottom: 10px; margin-bottom: 20px;
+    }
+    .schedule-header h2 { font-size: 28px; letter-spacing: 5px; color: #333; margin: 0; font-weight: 300; }
+    .schedule-list { display: flex; flex-direction: column; background: #fff; border-top: 1px solid #eee; }
+    .schedule-item {
+      display: flex; padding: 20px 0; border-bottom: 1px solid #eee;
+      text-decoration: none; color: inherit; transition: 0.3s;
+    }
+    .schedule-item:hover { background-color: #fafafa; padding-left: 10px; }
+    .date-box { min-width: 130px; display: flex; flex-direction: column; justify-content: center; }
+    .date-main { font-size: 36px; font-weight: 400; color: #333; line-height: 1; }
+    .date-sub { font-size: 12px; color: #888; letter-spacing: 1px; margin-top: 5px; }
+    .event-info { flex-grow: 1; padding-left: 15px; display: flex; flex-direction: column; justify-content: center; }
+    .tag-row { margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+    .tag-box { font-size: 10px; padding: 2px 8px; border: 1px solid #ddd; border-radius: 2px; font-weight: bold; }
+    .status-event { background: #e3f2fd; color: #2196f3; border: 1px solid #2196f3; }
+    .status-live { background: #ffeded; color: #ff5e5e; border: 1px solid #ff5e5e; }
+
+    /* --- 5. YOUTUBE SECTION CSS --- */
+    .youtube-section { max-width: 900px; margin: 80px auto; padding: 0 20px; }
+    .youtube-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid #fddc5a; padding-bottom: 10px; margin-bottom: 30px;
+    }
+    .youtube-header h2 { font-size: 28px; letter-spacing: 5px; color: #333; margin: 0; font-weight: 300; }
+    .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+    .video-card { text-decoration: none; color: inherit; display: block; }
+    .video-thumb-wrapper {
+      width: 100%; aspect-ratio: 16 / 9; border-radius: 15px; overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1); position: relative; background-color: #eee;
+    }
+    .video-thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .video-card:hover img { transform: scale(1.08); }
+    .play-overlay {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 50px; height: 50px; background: rgba(255, 255, 255, 0.85); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s;
+    }
+    .video-card:hover .play-overlay { opacity: 1; }
+    .play-overlay i { color: #ff85a2; font-size: 20px; margin-left: 3px; }
+
+    /* --- 6. FOOTER CSS (NEW) --- */
+    .main-footer {
+      position: relative;
+      background-color: #ffffff;
+      padding: 60px 0 40px;
+      overflow: hidden; /* สำหรับเก็บกลีบดอกไม้ลอยขึ้น */
+    }
+    .footer-blossom {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 1;
+    }
+    .petal-up {
+      position: absolute; background-color: #ffb6c1;
+      border-radius: 50% 0 50% 50%; opacity: 0;
+      animation: floatUp infinite ease-in;
+    }
+    @keyframes floatUp {
+      0% { top: 110%; opacity: 0; transform: translateX(0) rotate(0deg); }
+      20% { opacity: 0.7; }
+      80% { opacity: 0.7; }
+      100% { top: -10%; opacity: 0; transform: translateX(100px) rotate(360deg); }
+    }
+    .f1 { width: 15px; height: 15px; left: 15%; animation-duration: 7s; }
+    .f2 { width: 20px; height: 20px; left: 40%; animation-duration: 9s; animation-delay: 2s; }
+    .f3 { width: 12px; height: 12px; left: 65%; animation-duration: 6s; animation-delay: 1s; }
+    .f4 { width: 18px; height: 18px; left: 85%; animation-duration: 8s; animation-delay: 3s; }
+
+    .footer-content {
+      position: relative; z-index: 10;
+      text-align: center; display: flex; flex-direction: column;
+      align-items: center; gap: 40px;
+    }
+    .social-icons { display: flex; gap: 15px; }
+    .icon-btn {
+      width: 55px; height: 55px; background-color: #fddc5a;
+      border-radius: 50%; display: flex; justify-content: center; align-items: center;
+      text-decoration: none; color: #000; font-size: 22px; transition: 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .icon-btn:hover { transform: translateY(-5px); background-color: #ffb6c1; color: #fff; }
+    .x-icon { width: 20px; height: 20px; fill: currentColor; }
+    .logo-only { width: 140px; transition: 0.3s; }
+    .logo-only img { width: 100%; height: auto; display: block; }
+    .copyright { font-size: 13px; color: #888; font-weight: 300; }
+
+    @media (max-width: 600px) {
+      .video-grid { grid-template-columns: 1fr; }
+    }
+    /* --- New Header & Side Menu --- */
+    .main-header {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%;
+        height: 70px;
+        display: flex;
+        justify-content: flex-end; /* ดันปุ่มไปขวาสุด */
+        align-items: center;
+        padding: 0 30px;
+        z-index: 1000; /* ให้อยู่เหนือทุกอย่าง */
+        background: transparent;
+    }
+
+    .menu-trigger {
+        background: none; border: none; cursor: pointer;
+        display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .menu-trigger span {
+        display: block; width: 28px; height: 1.5px;
+        background-color: #333; transition: 0.3s;
+    }
+
+    /* Backdrop พื้นหลังตอนเปิดเมนู */
+    .menu-backdrop {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.2);
+        opacity: 0; visibility: hidden;
+        transition: 0.4s; z-index: 2000;
+        backdrop-filter: blur(2px);
+    }
+
+    /* ตัวเมนูเฉียงสีชมพู */
+    .side-menu {
+        position: fixed; top: 0; right: -100%; /* ซ่อนไว้ขวาสุด */
+        width: 80%; max-width: 400px; height: 100%;
+        background-color: #ff8da1; /* สีชมพูแบบ =LOVE */
+        z-index: 2001;
+        transition: 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        /* ตัดทรงเฉียง */
+        clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+        padding: 60px 40px;
+        display: flex; flex-direction: column;
+    }
+
+    /* เมื่อเมนูทำงาน */
+    .menu-active .menu-backdrop { opacity: 1; visibility: visible; }
+    .menu-active .side-menu { right: 0; }
+
+    .close-menu-btn {
+        align-self: flex-end;
+        background: none; border: none;
+        color: white; font-size: 30px; cursor: pointer;
+        margin-bottom: 30px;
+    }
+
+    .side-nav-links { list-style: none; padding: 0; margin: 0; }
+    .side-nav-links li { margin: 20px 0; text-align: right; }
+    .side-nav-links a {
+        text-decoration: none; color: white;
+        font-size: 18px; font-weight: 500;
+        letter-spacing: 2px; transition: 0.3s;
+    }
+    .side-nav-links a:hover { color: #fff9e6; padding-right: 10px; }
+
+    /* ปรับปุ่มเมนูให้เห็นชัดขึ้นบนรูป Banner */
+    .menu-trigger span { background-color: #ffffff; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+    
+  </style>
+</head>
+<body>
+  <div id="landing-overlay">
+    <div class="container">
+      <div class="logo-text">BLM48</div>
+      <div class="sub-text">Official Site</div>
+      </div>
+  </div>
+
+  <script>
+    
+    function toggleMenu() {
+        document.body.classList.toggle('menu-active');
+    }
+    // ฟังก์ชันสั่งปิดหน้า Landing
+    function exitLanding() {
+      document.getElementById('landing-overlay').classList.add('fade-out');
+    }
+
+    // --- ตั้งเวลาตรงนี้ ---
+    // 5000 คือ 5 วินาที (เปลี่ยนตัวเลขได้ตามใจเอ็มมี่เลยครับ)
+    setTimeout(exitLanding, 5000); 
+
+    // ระบบสร้างกลีบดอกไม้โปรยปราย
+    function createPetal() {
+      const petal = document.createElement('div');
+      petal.classList.add('petal');
+      const size = Math.random() * 15 + 10 + 'px';
+      petal.style.width = size; petal.style.height = size;
+      petal.style.left = Math.random() * 100 + 'vw';
+      petal.style.animationDuration = Math.random() * 5 + 5 + 's';
+      const overlay = document.getElementById('landing-overlay');
+      if(overlay) overlay.appendChild(petal);
+      setTimeout(() => petal.remove(), 10000);
+    }
+    setInterval(createPetal, 150); // เพิ่มจำนวนดอกไม้ให้เยอะขึ้นนิดนึง
+  </script>
+    <div class="bg-blossom-container">
+        <div class="bg-petal bp1"></div><div class="bg-petal bp2"></div>
+        <div class="bg-petal bp3"></div><div class="bg-petal bp4"></div>
+        <div class="bg-petal bp5"></div><div class="bg-petal bp6"></div>
+        <div class="bg-petal bp7"></div><div class="bg-petal bp8"></div>
+    </div>
+
+  <div class="hero-banner">
+    <img src="https://lh3.googleusercontent.com/d/1_bEVYmqNwCpnRKAGjhFUN-YcECH1RL1G=s1000" alt="BLM48 Head">
+    <div class="blossom-container">
+      <div class="petal p1"></div><div class="petal p2"></div><div class="petal p3"></div>
+      <div class="petal p4"></div><div class="petal p5"></div>
+    </div>
+  </div>
+
+  <div class="slider-outer">
+    <div class="slider-container">
+      <div class="slides" id="slideTrack">
+        <div class="slide active">
+          <a href="https://sites.google.com/view/blm48/theater?authuser=0" target="_parent">
+            <img src="https://lh3.googleusercontent.com/d/1LZI0qhipMuvEm6mbRIwP2y895OzHviQr=s1000" alt="Theater">
+          </a>
+        </div>
+         <div class="slide">
+          <a href="https://sites.google.com/view/blm48/blm48-concert?authuser=0" target="_parent">
+            <img src="https://lh3.googleusercontent.com/d/19_xYD7m-AoBC3wJkBEX75hj0xqymYotg=s1000" alt="BLM48 Concert 2026">
+            
+          </a>
+        </div>
+        <div class="slide">
+          <a href="https://www.instagram.com/blm48thecampus/" target="_parent">
+            <img src="https://lh3.googleusercontent.com/d/1fNpbKNEk7v7VPQ6O3flAXT7RNWfhu8KX=s1000" alt="Champ">
+            
+          </a>
+        </div>
+        <div class="slide">
+          <a href="https://www.instagram.com/blm48thecampus/" target="_parent">
+            <img src="https://lh3.googleusercontent.com/d/1VBMssfwUKfxIyfUTVAsTWOAHgVgnKENN=s1000" alt="TopStream">
+            
+          </a>
+        </div>
+        <div class="slide">
+          <a href="https://www.instagram.com/emmy.blm48official/" target="_parent">
+            <img src="https://lh3.googleusercontent.com/d/1dGxr366ZrP2GW9BIKz3YttFgijEMf4IL=s1000" alt="Emmy">
+            
+          </a>
+        </div>
+        <div class="slide">
+          <a href="https://www.instagram.com/noel.blm48official/" target="_parent">
+            <img src="https://lh3.googleusercontent.com/d/1KFzdFJLpkGUXT8tl355jC16RD4KmGUzz=s1000" alt="Noel">
+           
+          </a>
+        </div>
+      </div>
+      <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+      <button class="next" onclick="moveSlide(1)">&#10095;</button>
+    </div>
+    <div class="dots" id="dotContainer"></div>
+  </div>
+
+  <div class="news-section">
+    <div class="news-header">
+      <h2>NEWS</h2>
+      <a href="https://sites.google.com/view/blm48/news" class="view-all-btn">VIEW MORE ›</a>
+    </div>
+    <div class="news-container">
+      <a href="https://youtube.com/playlist?list=PLIZN3HRIc9-Bj8Cdm_Tdy9_KtZpkT0Za7" class="news-card">
+        <div class="news-thumb"><img src="https://lh3.googleusercontent.com/d/1Nd5WMn3yZdREl6I_vtdS7JJnYWiC3eYs=s1000" alt="Release"></div>
+        <div class="news-info">
+          <div class="news-meta"><span class="news-tag tag-release">RELEASE</span><span class="news-date">2026.04.25</span><span class="news-new">NEW</span></div>
+          <div class="news-title"> BLM48 10th Single "Sustainable" MV Out Now!</div>
+        </div>
+      </a>
+      <a href="https://www.instagram.com/p/DXj_bnLiYls/" class="news-card">
+        <div class="news-thumb"><img src="https://lh3.googleusercontent.com/d/161uWF0s7TiW364McHFNXYdmbbPYkIUid=s1000" alt="Event"></div>
+        <div class="news-info">
+          <div class="news-meta"><span class="news-tag tag-media">EVENT</span><span class="news-date">2026.04.25</span><span class="news-new">NEW</span></div>
+          <div class="news-title">New Logo BLM48 The Campus</div>
+        </div>
+      </a>
+      <a href="https://www.instagram.com/p/DXj_JcWiU5O/" class="news-card">
+        <div class="news-thumb"><img src="https://lh3.googleusercontent.com/d/1zJpeSdOxH09l71La0-5mlO5p9150Np_D=s1000" alt="Event"></div>
+        <div class="news-info">
+          <div class="news-meta"><span class="news-tag tag-media">EVENT</span><span class="news-date">2026.04.25</span><span class="news-new">NEW</span></div>
+          <div class="news-title">BLM48 Original Stage Setlist & BLM48 Shuffle Team</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="schedule-section">
+    <div class="schedule-header">
+      <h2>SCHEDULE</h2>
+      <a href="https://sites.google.com/view/blm48/schedule" class="view-all-btn">VIEW MORE ›</a>
+    </div>
+    <div class="schedule-list">
+      <a href="https://www.instagram.com/p/DXj-1-EiaBr/" class="schedule-item">
+        <div class="date-box">
+          <span class="date-main">TBA</span>
+          <span class="date-sub">TBA.2026</span>
+        </div>
+        <div class="event-info">
+          <div class="tag-row"><span class="tag-box status-event">EVENT</span><span class="news-new" style="margin-left:5px">NEW</span></div>
+          <div class="news-title">BLM48 Concert This Letter Says "Marry Me"</div>
+        </div>
+      </a>
+      <a href="https://www.youtube.com/live/VkRC5AJcxO0" class="schedule-item">
+        <div class="date-box">
+          <span class="date-main">04.25</span>
+          <span class="date-sub">SAT.2026</span>
+        </div>
+        <div class="event-info">
+          <div class="tag-row"><span class="tag-box status-live">LIVE</span><span class="news-new" style="margin-left:5px">NEW</span></div>
+          <div class="news-title">BLM48 10th Single "Sustainable" First Performance</div>
+        </div>
+      </a>
+            <a href="https://www.youtube.com/live/0bPwvSigE8s?si=RPZ9RAnOtl_UlF8b" class="schedule-item">
+        <div class="date-box">
+          <span class="date-main">04.11</span>
+          <span class="date-sub">SAT.2026</span>
+        </div>
+        <div class="event-info">
+          <div class="tag-row"><span class="tag-box status-live">LIVE</span><span class="news-new" style="margin-left:5px">NEW</span></div>
+          <div class="news-title">ประกวดหนูน้อยสงแกรนด์ Universe ประจำปี ๒๕๖๙</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="youtube-section">
+    <div class="youtube-header">
+      <h2>YouTube</h2>
+      <a href="https://www.youtube.com/@BLM48Official" target="_blank" class="view-all-btn">YouTube OFFICIAL CHANNEL ›</a>
+    </div>
+    <div class="video-grid">
+      <a href="https://youtu.be/1Vwg1iQUDtc?si=MhOKdpthQEuVebdK" target="_blank" class="video-card">
+        <div class="video-thumb-wrapper">
+          <img src="https://lh3.googleusercontent.com/d/1WXp1ZbzQ8ib1gb3imrDGQ7KjnFJZUaOO=s1000" alt="Sustainable">
+          <div class="play-overlay"><i class="fas fa-play"></i></div>
+        </div>
+      </a>
+
+      <a href="https://youtu.be/TAPlWWZMGFQ?si=__iqu3sD3ys8ORsh" target="_blank" class="video-card">
+        <div class="video-thumb-wrapper">
+          <img src="https://lh3.googleusercontent.com/d/11zU0OJFxJ9WFzqQvfrqPJrCUUyG-KJZJ=s1000" alt="Celebration">
+          <div class="play-overlay"><i class="fas fa-play"></i></div>
+        </div>
+      </a>
+
+      <a href="https://youtu.be/tqFr0QPgqR0?si=Tbdpd6Qz27KNgbXu" target="_blank" class="video-card">
+        <div class="video-thumb-wrapper">
+          <img src="https://lh3.googleusercontent.com/d/1wD34e9W6bHHuf9SJ_qBf6I_4e-c_oLen=s1000" alt="Sekai no Hito e - ถึงบรรเลง..ถ้อยเพลงของเรา">
+          <div class="play-overlay"><i class="fas fa-play"></i></div>
+        </div>
+      </a>
+
+      <a href="https://youtu.be/-rhmBTZoZk0?si=sPfBNaZs5arpLAnn" target="_blank" class="video-card">
+        <div class="video-thumb-wrapper">
+          <img src="https://lh3.googleusercontent.com/d/1-GMwAgsjKBORWgEHNKPUyecvDRo1w-Gc=s1000" alt="Eien Pressure – ผูกพันนิรันดร์">
+          <div class="play-overlay"><i class="fas fa-play"></i></div>
+        </div>
+      </a>
+    </div>
+
+  <footer class="main-footer">
+    <div class="footer-blossom">
+      <div class="petal-up f1"></div>
+      <div class="petal-up f2"></div>
+      <div class="petal-up f3"></div>
+      <div class="petal-up f4"></div>
+    </div>
+
+    <div class="footer-content">
+      <div class="social-icons">
+        <a href="https://www.youtube.com/@blm48official" class="icon-btn"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.facebook.com/Blm48official" class="icon-btn"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/blm48.official" class="icon-btn"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@blm48_official" class="icon-btn"><i class="fab fa-tiktok"></i></a>
+        <a href="https://x.com/BLM48_OFFICIAL" class="icon-btn">
+          <svg class="x-icon" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+
+      <div class="logo-only">
+        <img src="https://lh3.googleusercontent.com/d/1MFJqEvwB_nSMkCjhwv1999KtUMe_L8NU=s1000" alt="BLM48 Logo">
+      </div>
+
+      <div class="copyright">
+        © BLM48 official
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* --- Slider Script --- */
+    let index = 0;
+    const slides = document.querySelectorAll('.slide');
+    const track = document.getElementById('slideTrack');
+    const dotContainer = document.getElementById('dotContainer');
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement('span');
+      dot.classList.add('dot');
+      if(i === 0) dot.classList.add('active');
+      dot.onclick = () => goToSlide(i);
+      dotContainer.appendChild(dot);
+    });
+
+    function updateDisplay() {
+      track.style.transform = `translateX(-${index * 100}%)`;
+      slides.forEach((s, i) => s.classList.toggle('active', i === index));
+      document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
+    }
+
+    function moveSlide(step) {
+      index = (index + step + slides.length) % slides.length;
+      updateDisplay();
+    }
+
+    function goToSlide(n) {
+      index = n;
+      updateDisplay();
+    }
+
+    let autoSlide = setInterval(() => moveSlide(1), 5000);
+    document.querySelector('.slider-outer').onmouseenter = () => clearInterval(autoSlide);
+    document.querySelector('.slider-outer').onmouseleave = () => autoSlide = setInterval(() => moveSlide(1), 5000);
+  </script>
+
+</body>
+</html>
