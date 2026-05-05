@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Quicksand', 'Kanit', sans-serif;
+    background-color: #fff9e1;
+    overflow-x: hidden;
+  }
+
+  /* 1. ระบบกลีบดอกไม้พื้นหลัง - ปรับให้ครอบคลุมและไม่ขวางการจิ้ม */
+  .blossom-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .petal {
+    position: absolute;
+    background-color: #ffb6c1;
+    border-radius: 50% 0 50% 50%;
+    opacity: 0;
+    animation: falling infinite linear;
+  }
+
+  @keyframes falling {
+    0% { top: -10%; opacity: 0; transform: translateX(0) rotate(0deg); }
+    10% { opacity: 0.7; }
+    90% { opacity: 0.7; }
+    100% { top: 110%; opacity: 0; transform: translateX(100px) rotate(720deg); }
+  }
+
+  /* 2. คอนเทนต์ส่วนข่าว - ปรับความกว้างให้ยืดหยุ่น */
+  .news-wrapper {
+    position: relative;
+    z-index: 10;
+    max-width: 800px;
+    width: 90%; /* ให้เหลือขอบข้างในมือถือ */
+    margin: 30px auto;
+    padding: 20px 0;
+  }
+
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+    letter-spacing: 3px;
+    font-weight: 300;
+    margin-bottom: 30px;
+    font-size: clamp(1.8rem, 5vw, 2.5rem); /* ปรับขนาดตามความกว้างจอ */
+  }
+
+  .news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .news-item {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+  }
+
+  /* ปรับแต่งเมื่อนำเมาส์ไปชี้ (Desktop Only) */
+  @media (min-width: 1025px) {
+    .news-item:hover {
+      transform: translateX(10px);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 25px rgba(226, 160, 179, 0.15);
+    }
+  }
+
+  /* ข้อมูลวันที่และ Tag */
+  .news-date-group {
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+
+  .news-date {
+    display: block;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .news-tag {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+  }
+
+  .tag-release { background-color: #e0f7fa; color: #00bcd4; border: 1px solid #00bcd4; }
+  .tag-event { background-color: #fce4ec; color: #f06292; border: 1px solid #f06292; }
+  .tag-media { background-color: #fffde7; color: #fbc02d; border: 1px solid #fbc02d; }
+
+  .news-title {
+    color: #444;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.4;
+    flex-grow: 1;
+  }
+
+  .news-arrow {
+    color: #ffb6c1;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+
+  /* --- Responsive Breakpoints --- */
+
+  @media (max-width: 600px) {
+    .news-item {
+      flex-direction: column; /* เปลี่ยนจากแนวนอนเป็นแนวตั้ง */
+      align-items: flex-start; /* จัดชิดซ้าย */
+      gap: 12px;
+      padding: 15px;
+    }
+
+    .news-date-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: auto;
+    }
+
+    .news-date {
+      margin-bottom: 0;
+    }
+
+    .news-title {
+      font-size: 14px;
+    }
+
+    .news-arrow {
+      display: none; /* ซ่อนลูกศรในมือถือเพื่อประหยัดพื้นที่ */
+    }
+    
+    /* ลดจำนวนกลีบดอกไม้ในมือถือเพื่อลดภาระเครื่อง */
+    .p4, .p5 { display: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="blossom-container">
+    <div class="petal p1"></div><div class="petal p2"></div><div class="petal p3"></div>
+    <div class="petal p4"></div><div class="petal p5"></div>
+    <div class="petal p1" style="left:25%; animation-delay:4s;"></div>
+    <div class="petal p3" style="left:45%; animation-delay:7s;"></div>
+    <div class="petal p5" style="left:80%; animation-delay:3s;"></div>
+  </div>
+
+  <div class="news-wrapper">
+    <h1>NEWS</h1>
+
+    <div class="news-list">
+
+    <a href="https://youtube.com/playlist?list=PLIZN3HRIc9-Bj8Cdm_Tdy9_KtZpkT0Za7&si=6UwLTvKL6XiG9Ryg" class="news-item">
+        <div class="news-date-group">
+          <span class="news-date">2026.04.25</span>
+          <span class="news-tag tag-release">RELEASE</span>
+        </div>
+        <div class="news-title">
+          BLM48 10th Single "Sustainable"MV Out Now!
+        </div>
+        <div class="news-arrow">›</div>
+      </a>
+    
+      <a href="https://www.instagram.com/p/DXj_bnLiYls/" class="news-item">
+        <div class="news-date-group">
+          <span class="news-date">2026.04.25</span>
+          <span class="news-tag tag-media">MEDIA</span>
+        </div>
+        <div class="news-title">
+          New Logo BLM48 The Campus
+        </div>
+        <div class="news-arrow">›</div>
+
+      </a>
+
+    <a href="https://www.instagram.com/p/DXj_JcWiU5O/" class="news-item">
+        <div class="news-date-group">
+          <span class="news-date">2026.04.25</span>
+          <span class="news-tag tag-media">MEDIA</span>
+        </div>
+        <div class="news-title">
+          BLM48 Original Stage Setlist & BLM48 Shuffle Team
+        </div>
+        <div class="news-arrow">›</div>
+    </a>
+
+        <a href="https://www.instagram.com/p/DXj-1-EiaBr/?img_index=1" class="news-item">
+        <div class="news-date-group">
+          <span class="news-date">2026.04.25</span>
+          <span class="news-tag tag-event">EVENT</span>
+        </div>
+        <div class="news-title">
+          BLM48 Concert This Letter Says "Marry Me"
+        </div>
+        <div class="news-arrow">›</div>
+    </a>
+
+     <a href="https://youtu.be/RWxewbwau4k?si=EprRIZYCUP5oiuRj" class="news-item">
+        <div class="news-date-group">
+          <span class="news-date">2026.04.05</span>
+          <span class="news-tag tag-media">MEDIA</span>
+        </div>
+        <div class="news-title">
+          BLM48 10th Single Senbatsu Members Announcement 
+        </div>
+        <div class="news-arrow">›</div>
+      </a>
+
+      <a href="https://youtu.be/TAPlWWZMGFQ?si=JLMr92GyvgipOn88" class="news-item">
+        <div class="news-date-group">
+          <span class="news-date">2026.04.04</span>
+          <span class="news-tag tag-release">RELEASE</span>
+        </div>
+        <div class="news-title">
+          BLM48 3rd Generation Special Single "Celebration" Release!
+        </div>
+        <div class="news-arrow">›</div>
+      </a>
+      
+      <a href="https://youtube.com/playlist?list=PLIZN3HRIc9-DaI6E3Q9uJp4vSXAXBbNaV&si=W3_Pdej1Hj3xHsXA" class="news-item">
+        <div class="news-date-group">
+          <span class="news-date">2026.01.31</span>
+          <span class="news-tag tag-release">RELEASE</span>
+        </div>
+        <div class="news-title">
+          9th Single "BINGO!" - Official Music Video & Digital Release.
+        </div>
+        <div class="news-arrow">›</div>
+      </a>
+
+
+    </div>
+  </div>
+
+</body>
+</html>
