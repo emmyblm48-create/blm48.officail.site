@@ -134,15 +134,21 @@
 }
 
     .menu-trigger {
-        background: none; border: none; cursor: pointer;
-        display: flex; flex-direction: column; gap: 6px;
-    }
+    background: none; /* เอาพื้นหลังสีชมพู/ดำออก ให้เหลือแค่ตัวเส้น */
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* ระยะห่างระหว่างเส้น */
+    z-index: 1001;
+}
 
     .menu-trigger span {
-    display: block; 
-    width: 28px; 
-    height: 2px;
-    background-color: #000000;
+    display: block;
+    width: 30px;      /* ความยาวของเส้น */
+    height: 2px;      /* ความหนาของเส้น */
+    background-color: #000000; /* เปลี่ยนเป็นสีดำสนิท */
     transition: 0.3s;
 }
 
